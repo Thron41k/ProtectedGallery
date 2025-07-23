@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="clr-namespace:MauiApp2.Models"
+             x:Class="MauiApp2.Views.ImageViewPage"
+             Title="Просмотр изображения">
+    <ScrollView>
+        <VerticalStackLayout>
+            <Image Source="{Binding ImageSource}" Aspect="AspectFit" HeightRequest="500"/>
+            <Label Text="{Binding DateTaken, StringFormat='Дата создания: {0:dd.MM.yyyy HH:mm}'}"
+                   HorizontalOptions="Center"/>
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>
