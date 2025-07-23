@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewModels="clr-namespace:ProtectedGallery.ViewModels"
+             x:Class="ProtectedGallery.Views.PinPage"
+             Title="PIN-код">
+    <VerticalStackLayout Padding="30" Spacing="15">
+        <Label Text="{Binding IsFirstLaunch, Converter={StaticResource BoolToTextConverter},
+                      ConverterParameter='Придумайте PIN-код из 4 цифр;Введите PIN-код из 4 цифр'}"
+               FontSize="18" HorizontalOptions="Center" />
+
+        <Entry Placeholder="PIN-код"
+               Keyboard="Numeric"
+               MaxLength="4"
+               IsPassword="True"
+               Text="{Binding PinInput}" />
+
+        <Entry Placeholder="Подтвердите PIN"
+               Keyboard="Numeric"
+               MaxLength="4"
+               IsPassword="True"
+               IsVisible="{Binding IsFirstLaunch}"
+               Text="{Binding ConfirmPin}" />
+
+        <Button Text="Продолжить" Command="{Binding SubmitCommand}" />
+    </VerticalStackLayout>
+</ContentPage>

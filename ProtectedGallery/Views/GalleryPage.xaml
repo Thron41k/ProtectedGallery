@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewModels="clr-namespace:ProtectedGallery.ViewModels"
+             xmlns:models="clr-namespace:ProtectedGallery.Models"
+             x:Class="ProtectedGallery.Views.GalleryPage"
+             x:DataType="viewModels:GalleryViewModel"
+             Title="Галерея">
+
+    <Grid RowDefinitions="*,Auto">
+        <CollectionView ItemsSource="{Binding FileService.Files}"
+                        SelectionMode="Single"
+                        SelectedItem="{Binding SelectedImage}">
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="models:FileItem">
+                    <Grid Padding="10" ColumnDefinitions="Auto,*">
+                        <Image Source="{Binding Uri}" WidthRequest="80" HeightRequest="80" />
+                        <Label Text="{Binding Name}" Grid.Column="1" VerticalOptions="Center" Margin="10,0,0,0" />
+                    </Grid>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+
+        <StackLayout Orientation="Horizontal" Grid.Row="1" Padding="10" HorizontalOptions="Center">
+            <Button Text="Выбрать папку" Command="{Binding PickFolderCommand}"/>
+            <Button Text="Открыть" Command="{Binding OpenFileCommand}" Margin="10,0,0,0"/>
+            <Button Text="Удалить" Command="{Binding DeleteFileCommand}" Margin="10,0,0,0"/>
+        </StackLayout>
+    </Grid>
+</ContentPage>
