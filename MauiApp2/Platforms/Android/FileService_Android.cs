@@ -1,108 +1,105 @@
-﻿using Android.Content;
-using Android.Database;
-using Android.Provider;
+﻿using System.Collections.ObjectModel;
 using Android.App;
+using Android.Content;
+using Android.Provider;
 using AndroidX.DocumentFile.Provider;
 using MauiApp2.Models;
-using MauiApp2.Services;
 using MauiApp2.Services.Interfaces;
 
-[assembly: Microsoft.Maui.Controls.Dependency(typeof(MauiApp2.Platforms.Android.FileService_Android))]
+[assembly: Dependency(typeof(MauiApp2.FileServiceAndroid))]
+namespace MauiApp2;
 
-namespace MauiApp2.Platforms.Android;
-
-public class FileService_Android : IFileService, IActivityResultReceiver
+public class FileServiceAndroid : IFileService, IActivityResultReceiver
 {
-    private const int REQUEST_CODE_OPEN_DOCUMENT_TREE = 1000;
+    private const int RequestCodeOpenDocumentTree = 1000;
     private TaskCompletionSource<string?>? _tcsPickFolder;
+    public ObservableCollection<FileItem> Files { get; set; } = [];
 
     public Task<string?> PickFolderAsync()
     {
         _tcsPickFolder = new TaskCompletionSource<string?>();
         var activity = Platform.CurrentActivity ?? throw new Exception("Current Activity is null");
-
         Intent intent = new(Intent.ActionOpenDocumentTree);
         intent.AddFlags(ActivityFlags.GrantReadUriPermission | ActivityFlags.GrantWriteUriPermission | ActivityFlags.GrantPersistableUriPermission);
-
-        activity.StartActivityForResult(intent, REQUEST_CODE_OPEN_DOCUMENT_TREE);
+        activity.StartActivityForResult(intent, RequestCodeOpenDocumentTree);
         return _tcsPickFolder.Task;
     }
 
-    public Task<List<FileItem>> GetFilesAsync(string folderUri)
+    private void GetFilesAsync(string folderUri)
     {
-        var files = new List<FileItem>();
+        Files.Clear();
         var activity = Platform.CurrentActivity ?? throw new Exception("Current Activity is null");
         var contentResolver = activity.ContentResolver;
-        var treeUri = global::Android.Net.Uri.Parse(folderUri);
-
+        var treeUri = Android.Net.Uri.Parse(folderUri);
         var childrenUri = DocumentsContract.BuildChildDocumentsUriUsingTree(treeUri, DocumentsContract.GetTreeDocumentId(treeUri));
 
-        using (ICursor? cursor = contentResolver.Query(childrenUri, new string[] { "display_name", "document_id" }, null, null, null))
+        using var cursor = contentResolver?.Query(childrenUri!, null, null, null, null);
+        if (cursor == null || !cursor.MoveToFirst()) return;
+
+        var nameIndex = cursor.GetColumnIndex(DocumentsContract.Document.ColumnDisplayName);
+        var idIndex = cursor.GetColumnIndex(DocumentsContract.Document.ColumnDocumentId);
+        var dateIndex = cursor.GetColumnIndex(DocumentsContract.Document.ColumnLastModified);
+
+        do
         {
-            if (cursor != null && cursor.MoveToFirst())
+            var name = nameIndex >= 0 ? cursor.GetString(nameIndex) : null;
+            var documentId = idIndex >= 0 ? cursor.GetString(idIndex) : null;
+            long? timestamp = dateIndex >= 0 ? cursor.GetLong(dateIndex) : null;
+
+            if (string.IsNullOrEmpty(name) || string.IsNullOrEmpty(documentId)) continue;
+
+            var fileUri = DocumentsContract.BuildDocumentUriUsingTree(treeUri, documentId);
+            var date = timestamp > 0
+                ? (DateTime?)DateTimeOffset.FromUnixTimeMilliseconds(timestamp.Value).DateTime
+                : null;
+
+            Files.Add(new FileItem
             {
-                do
-                {
-                    string name = cursor.GetString(0);
-                    string documentId = cursor.GetString(1);
-                    var fileUri = DocumentsContract.BuildDocumentUriUsingTree(treeUri, documentId);
+                Name = name,
+                Uri = fileUri?.ToString(),
+                DateTaken = date
+            });
 
-                    files.Add(new FileItem { Name = name, Uri = fileUri.ToString() });
-                }
-                while (cursor.MoveToNext());
-            }
-        }
-
-        return Task.FromResult(files);
+        } while (cursor.MoveToNext());
     }
 
-    public async Task<bool> DeleteFileAsync(string fileUri)
+    public Task<bool> DeleteFileAsync(string fileUri)
     {
         try
         {
-            var context = global::Android.App.Application.Context;
-            var uri = global::Android.Net.Uri.Parse(fileUri);
-
-            // Получаем DocumentFile по Uri
+            var context = Android.App.Application.Context;
+            var uri = Android.Net.Uri.Parse(fileUri);
             var documentFile = DocumentFile.FromSingleUri(context, uri);
-
             if (documentFile == null)
             {
-                System.Diagnostics.Debug.WriteLine("DeleteFileAsync: DocumentFile is null");
-                return false;
+                return Task.FromResult(false);
             }
-
-            // Удаляем файл через DocumentFile API
-            bool deleted = documentFile.Delete();
-
-            System.Diagnostics.Debug.WriteLine($"DeleteFileAsync: deleted = {deleted}");
-
-            return deleted;
+            var deleted = documentFile.Delete();
+            if (!deleted) return Task.FromResult(deleted);
+            Files.Remove(Files.First(f => f.Uri == fileUri));
+            return Task.FromResult(deleted);
         }
-        catch (Exception ex)
+        catch
         {
-            System.Diagnostics.Debug.WriteLine($"DeleteFileAsync exception: {ex}");
-            return false;
+            return Task.FromResult(false);
         }
     }
 
     public void OnActivityResult(int requestCode, Result resultCode, Intent? data)
     {
-        if (requestCode == REQUEST_CODE_OPEN_DOCUMENT_TREE)
+        if (requestCode != RequestCodeOpenDocumentTree) return;
+        if (resultCode == Result.Ok && data != null)
         {
-            if (resultCode == Result.Ok && data != null)
-            {
-                var treeUri = data.Data!;
-                var activity = Platform.CurrentActivity!;
-                activity.ContentResolver.TakePersistableUriPermission(treeUri,
-                    ActivityFlags.GrantReadUriPermission | ActivityFlags.GrantWriteUriPermission);
-
-                _tcsPickFolder?.TrySetResult(treeUri.ToString());
-            }
-            else
-            {
-                _tcsPickFolder?.TrySetResult(null);
-            }
+            var treeUri = data.Data!;
+            var activity = Platform.CurrentActivity!;
+            activity.ContentResolver?.TakePersistableUriPermission(treeUri,
+                ActivityFlags.GrantReadUriPermission | ActivityFlags.GrantWriteUriPermission);
+            GetFilesAsync(treeUri.ToString()!);
+            _tcsPickFolder?.TrySetResult(treeUri.ToString());
+        }
+        else
+        {
+            _tcsPickFolder?.TrySetResult(null);
         }
     }
 }

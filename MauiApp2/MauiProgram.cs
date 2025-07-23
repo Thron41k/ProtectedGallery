@@ -1,5 +1,4 @@
 ﻿using CommunityToolkit.Maui;
-using MauiApp2.Platforms.Android;
 using MauiApp2.Services;
 using MauiApp2.Services.Interfaces;
 using MauiApp2.ViewModels;
@@ -26,11 +25,10 @@ namespace MauiApp2
 #if DEBUG
     		builder.Logging.AddDebug();
 #endif
-            // Регистрируем сервисы
             builder.Services.AddSingleton<IPinService, PinService>();
 #if ANDROID
-            builder.Services.AddSingleton<IFileService, FileService_Android>();
-            builder.Services.AddSingleton<IActivityResultReceiver>(sp =>
+            builder.Services.AddSingleton<IFileService, FileServiceAndroid>();
+            builder.Services.AddSingleton(sp =>
                 (IActivityResultReceiver)sp.GetRequiredService<IFileService>());
 #endif
             builder.Services.AddTransient<PinViewModel>();

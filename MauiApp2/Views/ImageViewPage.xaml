@@ -4,11 +4,10 @@
              xmlns:local="clr-namespace:MauiApp2.Models"
              x:Class="MauiApp2.Views.ImageViewPage"
              Title="Просмотр изображения">
-    <ScrollView>
         <VerticalStackLayout>
             <Image Source="{Binding ImageSource}" Aspect="AspectFit" HeightRequest="500"/>
-            <Label Text="{Binding DateTaken, StringFormat='Дата создания: {0:dd.MM.yyyy HH:mm}'}"
+        <Label Text="{Binding File.DateTaken, StringFormat='Дата создания: {0:dd.MM.yyyy HH:mm}'}"
                    HorizontalOptions="Center"/>
-        </VerticalStackLayout>
-    </ScrollView>
+            <Button Text="Удалить" Command="{Binding DeleteFileCommand}" Margin="0,50,0,0"/>
+    </VerticalStackLayout>
 </ContentPage>

@@ -13,11 +13,11 @@ namespace MauiApp2
         {
             base.OnActivityResult(requestCode, resultCode, data);
 
-            var serviceProvider = (this.Application as MauiApplication)?.Services;
+            var serviceProvider = IPlatformApplication.Current?.Services;
             if (serviceProvider == null)
                 return;
 
-            var receiver = serviceProvider.GetService<MauiApp2.Services.IActivityResultReceiver>();
+            var receiver = serviceProvider.GetService<MauiApp2.Services.Interfaces.IActivityResultReceiver>();
             receiver?.OnActivityResult(requestCode, resultCode, data);
         }
     }

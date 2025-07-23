@@ -6,7 +6,7 @@
              Title="PIN-код">
     <VerticalStackLayout Padding="30" Spacing="15">
         <Label Text="{Binding IsFirstLaunch, Converter={StaticResource BoolToTextConverter},
-                      ConverterParameter='Придумайте PIN-код;Введите PIN-код'}"
+                      ConverterParameter='Придумайте PIN-код из 4 цифр;Введите PIN-код из 4 цифр'}"
                FontSize="18" HorizontalOptions="Center" />
 
         <Entry Placeholder="PIN-код"

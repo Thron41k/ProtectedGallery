@@ -2,18 +2,20 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:viewModels="clr-namespace:MauiApp2.ViewModels"
+             xmlns:models="clr-namespace:MauiApp2.Models"
              x:Class="MauiApp2.Views.GalleryPage"
+             x:DataType="viewModels:GalleryViewModel"
              Title="Галерея">
 
     <Grid RowDefinitions="*,Auto">
-        <CollectionView ItemsSource="{Binding Files}"
+        <CollectionView ItemsSource="{Binding FileService.Files}"
                         SelectionMode="Single"
                         SelectedItem="{Binding SelectedImage}">
             <CollectionView.ItemTemplate>
-                <DataTemplate>
+                <DataTemplate x:DataType="models:FileItem">
                     <Grid Padding="10" ColumnDefinitions="Auto,*">
                         <Image Source="{Binding Uri}" WidthRequest="80" HeightRequest="80" />
-                        <Label Text="{Binding Name}" Grid.Column="1" VerticalOptions="Center" />
+                        <Label Text="{Binding Name}" Grid.Column="1" VerticalOptions="Center" Margin="10,0,0,0" />
                     </Grid>
                 </DataTemplate>
             </CollectionView.ItemTemplate>

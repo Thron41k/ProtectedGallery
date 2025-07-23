@@ -1,11 +1,12 @@
-﻿using MauiApp2.Models;
+﻿using System.Collections.ObjectModel;
+using MauiApp2.Models;
 
 namespace MauiApp2.Services.Interfaces
 {
     public interface IFileService
     {
+        ObservableCollection<FileItem> Files { get; set; }
         Task<string?> PickFolderAsync();
-        Task<List<FileItem>> GetFilesAsync(string folderUri);
         Task<bool> DeleteFileAsync(string fileUri);
     }
 }

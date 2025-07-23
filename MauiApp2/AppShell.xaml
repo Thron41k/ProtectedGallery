@@ -8,6 +8,5 @@
     Title="MauiApp2"    
     FlyoutBehavior="Disabled">
     <ShellContent Route="pin" ContentTemplate="{DataTemplate views:PinPage}" />
-    <ShellContent Route="gallery" ContentTemplate="{DataTemplate views:GalleryPage}" />
-    <ShellContent Route="ImageViewPage" ContentTemplate="{DataTemplate views:ImageViewPage}" />
+    <ShellContent Route="GalleryPage" ContentTemplate="{DataTemplate views:GalleryPage}" />
 </Shell>

@@ -1,5 +1,6 @@
 ﻿using System.Windows.Input;
 using CommunityToolkit.Mvvm.ComponentModel;
+using MauiApp2.Helpers;
 using MauiApp2.Services.Interfaces;
 
 namespace MauiApp2.ViewModels;
@@ -37,7 +38,7 @@ public partial class PinViewModel : ObservableObject
         if (_pinService == null) return;
         if (string.IsNullOrWhiteSpace(PinInput) || PinInput.Length != 4)
         {
-            //await _toastService.ShowAsync("Введите 4-значный PIN-код");
+            await UiHelpers.ShowAlert("Ошибка", "Введите 4-значный PIN-код");
             return;
         }
 
@@ -45,22 +46,22 @@ public partial class PinViewModel : ObservableObject
         {
             if (PinInput != ConfirmPin)
             {
-                //await _toastService.ShowAsync("PIN-коды не совпадают");
+                await UiHelpers.ShowAlert("Ошибка", "PIN-коды не совпадаю");
                 return;
             }
 
             await _pinService.SetPinAsync(PinInput);
-            await Shell.Current.GoToAsync("//gallery");
+            await Shell.Current.GoToAsync("//GalleryPage");
         }
         else
         {
             if (await _pinService.ValidatePinAsync(PinInput))
             {
-                await Shell.Current.GoToAsync("//gallery");
+                await Shell.Current.GoToAsync("//GalleryPage");
             }
             else
             {
-               // await _toastService.ShowAsync("Неверный PIN-код");
+                await UiHelpers.ShowAlert("Ошибка", "Неверный PIN-код");
             }
         }
     }
