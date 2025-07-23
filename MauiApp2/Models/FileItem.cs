@@ -1,15 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿namespace MauiApp2.Models;
 
-namespace MauiApp2.Models
+public class FileItem
 {
-    public class FileItem
-    {
-        public string? Uri { get; set; } = "";
-        public string Name { get; set; } = "";
-        public DateTime? DateTaken { get; set; }
-    }
+    public string? Uri { get; set; } = "";
+    public string Name { get; set; } = "";
+    public DateTime? DateTaken { get; set; }
 }

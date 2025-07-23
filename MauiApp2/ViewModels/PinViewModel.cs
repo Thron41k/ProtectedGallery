@@ -1,5 +1,5 @@
-﻿using System.Windows.Input;
-using CommunityToolkit.Mvvm.ComponentModel;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using MauiApp2.Helpers;
 using MauiApp2.Services.Interfaces;
 
@@ -12,12 +12,10 @@ public partial class PinViewModel : ObservableObject
     public string? PinInput { get; set; }
     public string? ConfirmPin { get; set; }
     public bool IsFirstLaunch { get; private set; }
-    public ICommand? SubmitCommand { get; }
 
     public PinViewModel(IPinService pinService)
     {
         _pinService = pinService;
-        SubmitCommand = new Command(async void () => await SubmitAsync());
         _ = InitAsync();
     }
 
@@ -33,6 +31,7 @@ public partial class PinViewModel : ObservableObject
         OnPropertyChanged(nameof(IsFirstLaunch));
     }
 
+    [RelayCommand]
     private async Task SubmitAsync()
     {
         if (_pinService == null) return;

@@ -1,6 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using MauiApp2.Models;
-using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.Input;
 using MauiApp2.Helpers;
 using MauiApp2.Services.Interfaces;

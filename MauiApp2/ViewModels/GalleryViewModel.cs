@@ -1,12 +1,8 @@
-﻿using CommunityToolkit.Maui.Alerts;
-using CommunityToolkit.Mvvm.ComponentModel;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using MauiApp2.Helpers;
 using MauiApp2.Models;
 using MauiApp2.Services.Interfaces;
-using MauiApp2.Views;
-using System.Collections.ObjectModel;
-using System.Windows.Input;
 
 namespace MauiApp2.ViewModels;
 
